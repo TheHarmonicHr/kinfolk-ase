@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Àṣẹ — Harmony Simpson</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --mahogany: #2C0F06;
+    --mahogany-mid: #4A1C0A;
+    --mahogany-light: #6B2D14;
+    --amber: #C8860A;
+    --amber-light: #E8A825;
+    --amber-pale: #FDF3DC;
+    --amber-warm: #F5D99A;
+    --cream: #F4EDE0;
+    --cream-dark: #E8DCC8;
+    --charcoal: #1C1209;
+    --text-on-dark: #F0E6D0;
+    --text-muted: #B89A72;
+    --grain-opacity: 0.04;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    background: var(--mahogany);
+    color: var(--text-on-dark);
+    line-height: 1.75;
+    font-size: 18px;
+    overflow-x: hidden;
+  }
+
+  /* ── GRAIN TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 128px;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 3rem;
+    background: rgba(44, 15, 6, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(200, 134, 10, 0.2);
+  }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--amber-light);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--amber-light); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8rem 3rem 6rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--amber), transparent);
+  }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--cream);
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--amber-light);
+  }
+
+  .hero-sentence {
+    max-width: 680px;
+    font-size: 1.35rem;
+    font-weight: 300;
+    line-height: 1.65;
+    color: var(--text-on-dark);
+    opacity: 0.85;
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+
+  .hero-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .hero-meta-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber);
+    opacity: 0.8;
+  }
+
+  .hero-meta-value {
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: var(--cream-dark);
+  }
+
+  .hero-divider {
+    width: 1px;
+    height: 40px;
+    background: rgba(200, 134, 10, 0.3);
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    padding: 7rem 3rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 300;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--amber);
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 600;
+    line-height: 1.15;
+    color: var(--cream);
+    margin-bottom: 1.5rem;
+  }
+
+  .section-title em {
+    font-style: italic;
+    color: var(--amber-light);
+  }
+
+  .section-body {
+    font-size: 1.15rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--text-on-dark);
+    opacity: 0.85;
+    max-width: 680px;
+  }
+
+  /* ── FULL-WIDTH DIVIDER ── */
+  .full-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(200,134,10,0.3), transparent);
+  }
+
+  /* ── RESEARCH SECTION ── */
+  #research {
+    background: rgba(74, 28, 10, 0.25);
+    max-width: 100%;
+    padding: 7rem 3rem;
+  }
+
+  #research .inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .research-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3.5rem;
+  }
+
+  .research-card {
+    background: rgba(44, 15, 6, 0.6);
+    border: 1px solid rgba(200, 134, 10, 0.2);
+    border-radius: 2px;
+    padding: 2rem;
+    transition: border-color 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .research-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--amber);
+    opacity: 0.6;
+  }
+
+  .research-card:hover {
+    border-color: rgba(200, 134, 10, 0.5);
+  }
+
+  .research-card-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--amber);
+    opacity: 0.35;
+    line-height: 1;
+    margin-bottom: 0.75rem;
+  }
+
+  .research-card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--cream);
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
+  }
+
+  .research-card-body {
+    font-size: 0.95rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--text-muted);
+  }
+
+  /* ── SENSORY STRIP ── */
+  .sensory-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 3rem;
+  }
+
+  .sensory-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid rgba(200, 134, 10, 0.35);
+    border-radius: 100px;
+    color: var(--amber-warm);
+    background: rgba(200, 134, 10, 0.08);
+    white-space: nowrap;
+  }
+
+  /* ── PULL QUOTE ── */
+  .pull-quote {
+    border-left: 3px solid var(--amber);
+    padding: 1.5rem 0 1.5rem 2rem;
+    margin: 4rem 0;
+    max-width: 720px;
+  }
+
+  .pull-quote p {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.55;
+    color: var(--cream);
+    margin-bottom: 0.75rem;
+  }
+
+  .pull-quote cite {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--amber);
+    font-style: normal;
+  }
+
+  /* ── DESIGN DIRECTIONS ── */
+  .directions-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+    margin-top: 3.5rem;
+    border: 1px solid rgba(200, 134, 10, 0.2);
+  }
+
+  .direction-row {
+    display: grid;
+    grid-template-columns: 200px 1fr 1fr;
+    background: rgba(44, 15, 6, 0.5);
+    border-bottom: 1px solid rgba(200, 134, 10, 0.12);
+    transition: background 0.3s;
+  }
+
+  .direction-row:last-child { border-bottom: none; }
+
+  .direction-row:hover {
+    background: rgba(74, 28, 10, 0.6);
+  }
+
+  .direction-cell {
+    padding: 2rem;
+    border-right: 1px solid rgba(200, 134, 10, 0.12);
+  }
+
+  .direction-cell:last-child { border-right: none; }
+
+  .direction-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--amber-light);
+    margin-bottom: 0.5rem;
+  }
+
+  .direction-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--amber);
+    opacity: 0.7;
+  }
+
+  .direction-desc {
+    font-size: 0.95rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--text-on-dark);
+    opacity: 0.8;
+  }
+
+  .direction-constraint {
+    font-size: 0.88rem;
+    font-weight: 300;
+    line-height: 1.65;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* ── LINEAGE SECTION ── */
+  .lineage-block {
+    background: rgba(200, 134, 10, 0.07);
+    border: 1px solid rgba(200, 134, 10, 0.25);
+    border-radius: 2px;
+    padding: 3rem;
+    margin-top: 3.5rem;
+    position: relative;
+  }
+
+  .lineage-block::before {
+    content: '\2014';
+    position: absolute;
+    top: -1px; left: 3rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    background: var(--mahogany);
+    padding: 0 0.75rem;
+    transform: translateY(-50%);
+  }
+
+  .lineage-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    font-style: italic;
+    color: var(--amber-light);
+    margin-bottom: 0.5rem;
+  }
+
+  .lineage-dates {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    color: var(--amber);
+    opacity: 0.7;
+    margin-bottom: 1.5rem;
+  }
+
+  .lineage-body {
+    font-size: 1.05rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--text-on-dark);
+    opacity: 0.85;
+    max-width: 680px;
+  }
+
+  /* ── CONTACT ── */
+  #contact {
+    background: var(--mahogany-mid);
+    max-width: 100%;
+    padding: 7rem 3rem;
+  }
+
+  #contact .inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: start;
+  }
+
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 2.5rem;
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    color: var(--text-on-dark);
+    opacity: 0.8;
+    transition: opacity 0.2s, color 0.2s;
+    font-size: 1rem;
+    font-weight: 300;
+  }
+
+  .contact-link:hover {
+    opacity: 1;
+    color: var(--amber-light);
+  }
+
+  .contact-link-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber);
+    opacity: 0.8;
+    min-width: 80px;
+  }
+
+  .collab-block {
+    background: rgba(44, 15, 6, 0.5);
+    border: 1px solid rgba(200, 134, 10, 0.2);
+    padding: 2.5rem;
+    border-radius: 2px;
+  }
+
+  .collab-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--cream);
+    margin-bottom: 1rem;
+    line-height: 1.3;
+  }
+
+  .collab-body {
+    font-size: 0.95rem;
+    font-weight: 300;
+    line-height: 1.75;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .collab-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .collab-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid rgba(200, 134, 10, 0.3);
+    border-radius: 100px;
+    color: var(--amber-warm);
+    background: rgba(200, 134, 10, 0.06);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--charcoal);
+    padding: 2rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(200, 134, 10, 0.15);
+  }
+
+  footer p {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    opacity: 0.6;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { gap: 1.25rem; }
+    section { padding: 5rem 1.5rem; }
+    #research, #contact { padding: 5rem 1.5rem; }
+    .hero { padding: 7rem 1.5rem 5rem; }
+    .hero-meta { flex-wrap: wrap; gap: 1.5rem; }
+    .hero-divider { display: none; }
+    #contact .inner { grid-template-columns: 1fr; gap: 3rem; }
+    .direction-row { grid-template-columns: 1fr; }
+    .direction-cell { border-right: none; border-bottom: 1px solid rgba(200,134,10,0.12); }
+    .direction-cell:last-child { border-bottom: none; }
+    footer { flex-direction: column; gap: 0.75rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Àṣẹ <span style="font-family:'DM Mono',monospace;font-size:0.55rem;font-weight:300;letter-spacing:0.1em;color:var(--text-muted);opacity:0.7;vertical-align:middle;margin-left:0.4rem;">("ah-sheh")</span></a>
+  <ul class="nav-links">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#directions">Directions</a></li>
+    <li><a href="#library">Library</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="overview">
+  <p class="hero-eyebrow">IXD Capstone &nbsp;·&nbsp; 2025–2026 &nbsp;·&nbsp; Harmony Simpson</p>
+  <h1 class="hero-title">À<em>ṣẹ</em></h1>
+  <p class="hero-sentence">Designing the onboarding experience for the family genealogist — a private, physical-first system that lowers the labor of documenting oral history and protects Black family data from corporate erasure.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Research</span>
+      <span class="hero-meta-value">17 survey participants</span>
+    </div>
+    <div class="hero-divider"></div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Interviews</span>
+      <span class="hero-meta-value">8 in-depth sessions</span>
+    </div>
+    <div class="hero-divider"></div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Focus</span>
+      <span class="hero-meta-value">African American oral history</span>
+    </div>
+    <div class="hero-divider"></div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Presentation</span>
+      <span class="hero-meta-value">June 11, 2026</span>
+    </div>
+  </div>
+</section>
+
+<div class="full-divider"></div>
+
+<!-- RESEARCH -->
+<div id="research">
+  <div class="inner">
+    <p class="section-label">Research Findings</p>
+    <h2 class="section-title">The archive lives<br><em>in people, not platforms.</em></h2>
+    <p class="section-body">Eight in-depth interviews and seventeen surveys revealed that memory in Black families is overwhelmingly sensory, social, and embodied. The keeper of the archive is almost always one person — an elder woman — and when she goes, so does the history.</p>
+
+    <div class="research-grid">
+      <div class="research-card">
+        <div class="research-card-num">01</div>
+        <h3 class="research-card-title">The Archive Is Concentrated</h3>
+        <p class="research-card-body">In every interview, the family's collective memory was held by a single person — overwhelmingly aunts and grandmothers. No redundancy, no system. When she goes, the archive goes with her.</p>
+      </div>
+      <div class="research-card">
+        <div class="research-card-num">02</div>
+        <h3 class="research-card-title">The Cloud Is Not Trusted</h3>
+        <p class="research-card-body">Participants described digital storage as cold, costly, and controlled by corporations they have no reason to trust. One participant upgraded her Google Photos plan twice in a single month and still feared losing her photos.</p>
+      </div>
+      <div class="research-card">
+        <div class="research-card-num">03</div>
+        <h3 class="research-card-title">Memory Is Sensory, Not Digital</h3>
+        <p class="research-card-body">Not one respondent said a folder of photos. They said: a cast iron skillet, wind chimes, mothballs and lavender, almond tea, the smell of Sunday church. Memory lives in the body before it lives anywhere else.</p>
+      </div>
+      <div class="research-card">
+        <div class="research-card-num">04</div>
+        <h3 class="research-card-title">Digitization Feels Like Labor</h3>
+        <p class="research-card-body">The act of organizing and uploading family history is experienced as work, not love. The friction is not just technical — it is emotional. The system must make documentation feel like ritual, not filing.</p>
+      </div>
+    </div>
+
+    <div class="pull-quote">
+      <p>"People say African Americans don't have culture, but we made our culture from the ground up after being snatched. Our culture is word of mouth — it's in the stories."</p>
+      <cite>— Eric, Interview Participant</cite>
+    </div>
+
+    <p class="section-label" style="margin-top: 0;">Sensory Anchors Collected</p>
+    <div class="sensory-strip">
+      <span class="sensory-tag">cast iron skillet</span>
+      <span class="sensory-tag">wind chimes</span>
+      <span class="sensory-tag">mothballs + lavender</span>
+      <span class="sensory-tag">almond tea</span>
+      <span class="sensory-tag">sunday morning church</span>
+      <span class="sensory-tag">jazz + incense</span>
+      <span class="sensory-tag">oldies music</span>
+      <span class="sensory-tag">the smell of sage</span>
+      <span class="sensory-tag">quilts</span>
+      <span class="sensory-tag">blackberry curve</span>
+      <span class="sensory-tag">obama commemorative plate</span>
+      <span class="sensory-tag">"love you, mean it"</span>
+      <span class="sensory-tag">saturday morning jazz</span>
+      <span class="sensory-tag">the banana boat song</span>
+      <span class="sensory-tag">teeth smacking</span>
+      <span class="sensory-tag">"contributing factors"</span>
+    </div>
+  </div>
+</div>
+
+<div class="full-divider"></div>
+
+<!-- DESIGN DIRECTIONS -->
+<section id="directions">
+  <p class="section-label">Design Directions</p>
+  <h2 class="section-title">Three concepts.<br><em>One instinct.</em></h2>
+  <p class="section-body">The physical object and the local OS are not two options — they are two layers of the same thing. The object is the body. The OS is the mind. A physical heirloom or vessel is the key that unlocks a private, local experience. This is not a new idea. It is an inherited one.</p>
+
+  <div class="directions-grid">
+    <div class="direction-row">
+      <div class="direction-cell">
+        <p class="direction-tag">Direction 01</p>
+        <p class="direction-name">The Oral Map</p>
+      </div>
+      <div class="direction-cell">
+        <p class="direction-desc">A microphone captures a spoken story and renders a living family constellation in real time — mapping names, relationships, and moments as the person speaks. The family tree draws itself from the voice.</p>
+      </div>
+      <div class="direction-cell">
+        <p class="direction-constraint">Processing happens locally via Edge AI. No story leaves the room. The constellation belongs to the family, not the platform.</p>
+      </div>
+    </div>
+    <div class="direction-row">
+      <div class="direction-cell">
+        <p class="direction-tag">Direction 02</p>
+        <p class="direction-name">The Ancestral Vessel</p>
+      </div>
+      <div class="direction-cell">
+        <p class="direction-desc">A weighted physical object you can ask a question aloud. It draws from uploaded family data to return qualitative wisdom — not yes or no, but a voice, a memory, an ancestor's way of thinking through a problem.</p>
+      </div>
+      <div class="direction-cell">
+        <p class="direction-constraint">A local family model that does not train on global data. Privacy is hardware-bound. The precedent: Paschal Beverly Randolph's magic mirror, 1858.</p>
+      </div>
+    </div>
+    <div class="direction-row">
+      <div class="direction-cell">
+        <p class="direction-tag">Direction 03</p>
+        <p class="direction-name">The Ancestral OS</p>
+      </div>
+      <div class="direction-cell">
+        <p class="direction-desc">A private, local operating system for family history that only activates when a physical key — a heirloom object placed on a sensor — is present. No cloud. No subscription. The hardware is the vault.</p>
+      </div>
+      <div class="direction-cell">
+        <p class="direction-constraint">Zero cloud integration. Access is tied to physical presence, not passwords. The system cannot be accessed remotely, sold, or subpoenaed without the object.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="lineage-block">
+    <p class="section-label" style="margin-bottom: 1.5rem;">On Lineage</p>
+    <p class="lineage-name">Paschal Beverly Randolph</p>
+    <p class="lineage-dates">October 8, 1825 — July 29, 1875</p>
+    <p class="lineage-body">During my own genealogy research — conducted alongside this project — I discovered my great-great-great grandfather: a Black abolitionist, physician, novelist, and founder of the first Rosicrucian order in the United States. His spiritual practice centered on a physical object — the "magic mirror" — used to access ancestral wisdom and inner vision. He nearly did not survive in my family's memory. He is now the clearest evidence I have for why this project is urgent, and what it should feel like to use.</p>
+  </div>
+</section>
+
+<div class="full-divider"></div>
+
+<!-- READING LIST -->
+<section id="library">
+  <p class="section-label">Research Library</p>
+  <h2 class="section-title">The texts<br><em>behind the work.</em></h2>
+  <p class="section-body">A living bibliography — the books, reports, and primary sources shaping the intellectual framework of Àṣẹ.</p>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 3.5rem; border: 1px solid rgba(200,134,10,0.2);">
+
+    <!-- BOOKS -->
+    <div style="grid-column: 1 / -1; background: rgba(44,15,6,0.7); padding: 1rem 2rem; border-bottom: 1px solid rgba(200,134,10,0.15);">
+      <p style="font-family:'DM Mono',monospace; font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--amber); opacity:0.8;">Books</p>
+    </div>
+
+    <div class="reading-item">
+      <p class="reading-title">Mules and Men</p>
+      <p class="reading-author">Zora Neale Hurston</p>
+      <p class="reading-note">The original ethnography of Black Southern oral tradition, Hoodoo practice, and folk knowledge as living systems of knowing. The methodological ancestor of this project.</p>
+    </div>
+    <div class="reading-item">
+      <p class="reading-title">The Souls of Black Folk</p>
+      <p class="reading-author">W.E.B. Du Bois</p>
+      <p class="reading-note">The theoretical backbone for why documenting Black inner life is an act of resistance. Double consciousness as the condition this design must hold space for.</p>
+    </div>
+    <div class="reading-item">
+      <p class="reading-title">The Age of Spiritual Machines</p>
+      <p class="reading-author">Ray Kurzweil</p>
+      <p class="reading-note">The foil. Kurzweil imagines technology absorbing human consciousness. Àṣẹ is the counter-argument: machines that protect what is irreducibly human, not replace it.</p>
+    </div>
+    <div class="reading-item">
+      <p class="reading-title">Afrofuturism: The World of Black Sci-Fi and Fantasy Culture</p>
+      <p class="reading-author">Ytasha L. Womack</p>
+      <p class="reading-note">The act of willing oneself into the future despite conditions designed to exclude you. The philosophical framework for building technology that serves Black imagination.</p>
+    </div>
+    <div class="reading-item">
+      <p class="reading-title">Simulacra and Simulation</p>
+      <p class="reading-author">Jean Baudrillard</p>
+      <p class="reading-note">Applied here to ask: at what stage does a digital copy of memory lose its connection to the original? The critical constraint on how Àṣẹ should and should not represent the past.</p>
+    </div>
+    <div class="reading-item">
+      <p class="reading-title">Data Feminism</p>
+      <p class="reading-author">Catherine D'Ignazio & Lauren F. Klein</p>
+      <p class="reading-note">A framework for examining who data systems serve, who they harm, and how power shapes what gets counted. Essential for designing an archive that refuses extractive logic.</p>
+    </div>
+    <div class="reading-item">
+      <p class="reading-title">Speculative Everything</p>
+      <p class="reading-author">Anthony Dunne & Fiona Raby</p>
+      <p class="reading-note">Design as a form of inquiry, not just production. The permission to ask "what if" as a serious design method — foundational to this project's speculative vessel concepts.</p>
+    </div>
+    <div class="reading-item">
+      <p class="reading-title">Design for the Real World</p>
+      <p class="reading-author">Victor Papanek</p>
+      <p class="reading-note">Design as social responsibility. The reminder that tools built for communities must center those communities — not the designer's assumptions about them.</p>
+    </div>
+    <div class="reading-item">
+      <p class="reading-title">Man's Search for Meaning</p>
+      <p class="reading-author">Viktor Frankl</p>
+      <p class="reading-note">On how meaning-making sustains people through loss. A lens for understanding why preserving family memory is not sentimental — it is survival.</p>
+    </div>
+
+    <!-- PRIMARY SOURCES -->
+    <div style="grid-column: 1 / -1; background: rgba(44,15,6,0.7); padding: 1rem 2rem; border-top: 1px solid rgba(200,134,10,0.15); border-bottom: 1px solid rgba(200,134,10,0.15);">
+      <p style="font-family:'DM Mono',monospace; font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--amber); opacity:0.8;">Primary Sources & Reports</p>
+    </div>
+
+    <div class="reading-item">
+      <p class="reading-title">Dealings with the Dead</p>
+      <p class="reading-author">Paschal Beverly Randolph</p>
+      <p class="reading-note">A primary source from the project's own ancestral lineage. Randolph's writings on spiritual practice, trance, and the relationship between the living and the dead — read here as design precedent.</p>
+    </div>
+    <div class="reading-item">
+      <p class="reading-title">Black–White Digital Inclusion Index</p>
+      <p class="reading-author">National Urban League, State of Black America 2018</p>
+      <p class="reading-note">Statistical grounding for the digital equity gap: broadband access, STEM representation, and why Black communities have structural reasons to distrust platforms not built for them.</p>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .reading-item {
+    background: rgba(44,15,6,0.4);
+    border-right: 1px solid rgba(200,134,10,0.12);
+    border-bottom: 1px solid rgba(200,134,10,0.12);
+    padding: 1.75rem 2rem;
+    transition: background 0.3s;
+  }
+  .reading-item:hover { background: rgba(74,28,10,0.5); }
+  .reading-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    font-style: italic;
+    color: var(--cream);
+    margin-bottom: 0.2rem;
+    line-height: 1.3;
+  }
+  .reading-author {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber);
+    opacity: 0.75;
+    margin-bottom: 0.75rem;
+  }
+  .reading-note {
+    font-size: 0.88rem;
+    font-weight: 300;
+    line-height: 1.65;
+    color: var(--text-muted);
+  }
+  @media (max-width: 768px) {
+    #library > div[style] { grid-template-columns: 1fr !important; }
+    .reading-item { border-right: none; }
+  }
+</style>
+
+<div class="full-divider"></div>
+
+<!-- CONTACT -->
+<div id="contact">
+  <div class="inner">
+    <div>
+      <p class="section-label">Contact</p>
+      <h2 class="section-title" style="font-size: 2rem;">Harmony<br><em>Simpson</em></h2>
+      <p class="section-body" style="font-size: 1rem; margin-top: 1rem;">Senior, IXD Program. Interaction designer, computational sociologist, advocate interventionist. Building at the intersection of oral tradition, data sovereignty, and ancestral intelligence.</p>
+
+      <div class="contact-links">
+        <a href="/cdn-cgi/l/email-protection#a7cfc8d2d5d4c8c1cfc6d5cac8c9dee7c0cac6cecb89c4c8ca" class="contact-link">
+          <span class="contact-link-label">Email</span>
+          <span><span class="__cf_email__" data-cfemail="aec6c1dbdcddc1c8c6cfdcc3c1c0d7eec9c3cfc7c280cdc1c3">[email&#160;protected]</span></span>
+        </a>
+        <a href="https://linkedin.com/in/hoursofharmony" class="contact-link">
+          <span class="contact-link-label">LinkedIn</span>
+          <span>linkedin.com/in/hoursofharmony</span>
+        </a>
+      </div>
+    </div>
+
+    <div>
+      <div class="collab-block">
+        <h3 class="collab-title">Open to collaboration &amp; feedback</h3>
+        <p class="collab-body">This project is in active development through June 2026. I am seeking input from researchers, technologists, cultural practitioners, and community members who work at the intersection of Black history, memory systems, and emerging technology.</p>
+        <div class="collab-tags">
+          <span class="collab-tag">Oral history</span>
+          <span class="collab-tag">Data sovereignty</span>
+          <span class="collab-tag">Hardware prototyping</span>
+          <span class="collab-tag">Afrofuturism</span>
+          <span class="collab-tag">Ancestral intelligence</span>
+          <span class="collab-tag">Interaction design</span>
+          <span class="collab-tag">Genealogy</span>
+          <span class="collab-tag">Community archiving</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>Àṣẹ &nbsp;·&nbsp; IXD Capstone &nbsp;·&nbsp; Harmony Si
