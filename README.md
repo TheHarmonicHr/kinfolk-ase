@@ -74,7 +74,7 @@ He is now the clearest evidence I have for why this project is urgent.
 ## Contact
 
 **Harmony Simpson**  
-Interaction Designer · Computational Sociologist  
+Interaction Designer · Creative Technologist 
 [hoursofharmony@gmail.com](mailto:hoursofharmony@gmail.com)  
 [linkedin.com/in/hoursofharmony](https://linkedin.com/in/hoursofharmony)
 
